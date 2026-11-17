@@ -1,38 +1,84 @@
-from pydub import AudioSegment
 import os
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from pydub import AudioSegment
 import imageio_ffmpeg
 
-# Leagă pydub de FFmpeg-ul instalat automat
+# Setează motorul ffmpeg
 AudioSegment.converter = imageio_ffmpeg.get_ffmpeg_exe()
 
-def converteste_audio(input_file, output_format="mp3", bitrate="192k", sample_rate=None):
-    if not os.path.exists(input_file):
-        print(f"Eroare: Fișierul {input_file} nu există!")
+def converteste_fisier():
+    input_path = entry_file.get()
+    if not input_path or not os.path.exists(input_path):
+        messagebox.showerror("Eroare", "Te rog selectează un fișier audio valid!")
         return
-
-    print(f"Se procesează fișierul: {input_file}...")
     
-    # 1. Încărcarea fișierului audio
-    audio = AudioSegment.from_file(input_file)
+    format_ales = var_format.get()
+    bitrate_ales = var_bitrate.get()
+    sample_rate_ales = int(var_sr.get())
     
-    # 2. Modificarea ratei de eșantionare (Sample Rate)
-    if sample_rate:
-        audio = audio.set_frame_rate(sample_rate)
-        print(f"-> Rata de eșantionare setată la: {sample_rate} Hz")
+    try:
+        print("Se procesează semnalul audio...")
+        audio = AudioSegment.from_file(input_path)
+        
+        # Prelucrarea semnalului: Modificarea ratei de eșantionare (Sample Rate)
+        audio = audio.set_frame_rate(sample_rate_ales)
+        
+        base_name = os.path.splitext(input_path)[0]
+        output_path = f"{base_name}_procesat.{format_ales}"
+        
+        # Exportul cu bitrate-ul ales
+        if format_ales == "mp3":
+            audio.export(output_path, format=format_ales, bitrate=bitrate_ales)
+        else:
+            audio.export(output_path, format=format_ales)
+            
+        messagebox.showinfo("Succes!", f"Fișierul a fost salvat ca:\n{output_path}")
+    except Exception as e:
+        messagebox.showerror("Eroare de procesare", str(e))
 
-    # Generarea numelui de ieșire
-    base_name = os.path.splitext(input_file)[0]
-    output_file = f"{base_name}_conversie.{output_format}"
+def selecteaza_fisier():
+    file_path = filedialog.askopenfilename(filetypes=[("Fisiere audio", "*.wav *.mp3 *.flac")])
+    if file_path:
+        entry_file.delete(0, tk.END)
+        entry_file.insert(0, file_path)
 
-    # 3. Exportul în MP3
-    if output_format == "mp3":
-        audio.export(output_file, format=output_format, bitrate=bitrate)
-        print(f"-> Calitate (Bitrate) setată la: {bitrate}")
-    else:
-        audio.export(output_file, format=output_format)
+# --- Interfața Grafică (GUI) ---
+root = tk.Tk()
+root.title("Convertor & Prelucrare Semnale Audio")
+root.geometry("450x380")
+root.resizable(False, False)
 
-    print(f"Succes! Fișierul a fost salvat ca: {output_file}\n")
+# 1. Selectare fișier
+tk.Label(root, text="Fișier audio sursă:", font=("Arial", 10, "bold")).pack(pady=5)
+frame_file = tk.Frame(root)
+frame_file.pack(pady=5)
 
-if __name__ == "__main__":
-    fisier_intrare = "melodie.wav" 
-    converteste_audio(fisier_intrare, output_format="mp3", bitrate="320k", sample_rate=44100)
+entry_file = tk.Entry(frame_file, width=35)
+entry_file.pack(side=tk.LEFT, padx=5)
+tk.Button(frame_file, text="Caută...", command=selecteaza_fisier).pack(side=tk.LEFT)
+
+# 2. Alegere Format Ieșire
+tk.Label(root, text="Format de ieșire:", font=("Arial", 10, "bold")).pack(pady=5)
+var_format = tk.StringVar(value="mp3")
+frame_format = tk.Frame(root)
+frame_format.pack()
+tk.Radiobutton(frame_format, text="MP3", variable=var_format, value="mp3").pack(side=tk.LEFT, padx=10)
+tk.Radiobutton(frame_format, text="WAV", variable=var_format, value="wav").pack(side=tk.LEFT, padx=10)
+
+# 3. Alegere Rată de Eșantionare (Sample Rate)
+tk.Label(root, text="Rată de eșantionare (Sample Rate):", font=("Arial", 10, "bold")).pack(pady=5)
+var_sr = tk.StringVar(value="44100")
+sr_menu = tk.OptionMenu(root, var_sr, "8000", "16000", "22050", "44100", "48000")
+sr_menu.pack()
+
+# 4. Alegere Bitrate / Calitate
+tk.Label(root, text="Calitate (Bitrate MP3):", font=("Arial", 10, "bold")).pack(pady=5)
+var_bitrate = tk.StringVar(value="192k")
+bit_menu = tk.OptionMenu(root, var_bitrate, "64k", "128k", "192k", "320k")
+bit_menu.pack()
+
+# 5. Buton Conversie
+tk.Button(root, text="Convertește și Procesează", bg="green", fg="white", font=("Arial", 11, "bold"), command=converteste_fisier).pack(pady=15)
+
+root.mainloop()
