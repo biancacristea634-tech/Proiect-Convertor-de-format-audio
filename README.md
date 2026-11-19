@@ -39,11 +39,9 @@ Acest proiect a fost dezvoltat în cadrul disciplinei **Prelucrarea Semnalelor A
 
 ## 📂 Structura Proiectului
 
-```text
 Proiect-Convertor-de-format-audio/
 │
 ├── main.py             # Interfața grafică, logica de decodare/procesare, player-ul audio și verificarea
 ├── README.md           # Documentația detaliată a proiectului
 ├── requirements.txt    # Lista dependențelor Python externe
-├── .gitignore          # Fișiere și foldere ignorate de Git (cache, fișiere temporare/procesate)
 └── melodie.wav         # Fișier audio de test / sursă (opțional, pot fi folosite și alte fișiere audio)
