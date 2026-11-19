@@ -35,13 +35,11 @@ Acest proiect a fost dezvoltat în cadrul disciplinei **Prelucrarea Semnalelor A
 * **Imageio-ffmpeg** – Furnizează executabilul `ffmpeg` fără configurare manuală în sistem, utilizat pentru decodarea fișierelor audio (evitând dependența de `ffprobe`), export și citirea proprietăților reale ale fișierelor.
 * **Winsound** (modul standard Python pe Windows) – Redarea asincronă și oprirea sunetului din interfață.
 
----
+
 
 ## 📂 Structura Proiectului
 
-Proiect-Convertor-de-format-audio/
-│
-├── main.py             # Interfața grafică, logica de decodare/procesare, player-ul audio și verificarea
-├── README.md           # Documentația detaliată a proiectului
-├── requirements.txt    # Lista dependențelor Python externe
-└── melodie.wav         # Fișier audio de test / sursă (opțional, pot fi folosite și alte fișiere audio)
+* **`main.py`** — Interfața grafică, logica de decodare/procesare, player-ul audio și verificarea.
+* **`README.md`** — Documentația detaliată a proiectului.
+* **`requirements.txt`** — Lista dependențelor Python externe.
+* **`melodie.wav`** — Fișier audio de test / sursă (opțional, pot fi folosite și alte fișiere audio).
